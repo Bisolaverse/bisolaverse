@@ -1,0 +1,217 @@
+<!--
+  ============================================================
+  WRITING  —  writing.html
+  ============================================================
+  Standalone writing page, reached from the Writing box on the
+  home page. Share directly as: yoursite.com/writing
+  This is the fleshed-out, AUTO-UPDATING list — it pulls every
+  recent post from Substack + Medium live through /api/feed.
+  The home page only shows a curated three-post preview.
+
+  EDITABLE: the intro lives in the INTRO block in the <script>.
+  The post list updates itself; you don't edit it.
+  ============================================================
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Writing — Bisola Abimbola</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<meta name="description" content="Writing is the best thing I know how to do. Fiction, essays, and technical pieces." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cement:#a6a69d;--cement-2:#9c9c92;--ink:#15140f;--ink-2:rgba(21,20,15,.64);
+    --ink-3:rgba(21,20,15,.42);--rule:rgba(21,20,15,.34);--rule-2:rgba(21,20,15,.15);
+    --sage:#566b3c;--disp:"Archivo",sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--cement);color:var(--ink);font-family:var(--mono);
+    font-size:15.5px;line-height:1.62;-webkit-font-smoothing:antialiased;}
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+  a{color:inherit;text-decoration:none;}
+  .wrap{max-width:1100px;margin:0 auto;}
+
+  .docbar{border-bottom:1px solid var(--rule);}
+  .docbar-inner{max-width:1100px;margin:0 auto;padding:11px 30px;display:flex;
+    justify-content:space-between;gap:18px;flex-wrap:wrap;font-family:var(--mono);
+    font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-2);}
+  .docbar-inner .lead{color:var(--ink);font-weight:600;}
+  .docbar-inner b{color:var(--sage);}
+  nav{position:sticky;top:0;z-index:100;background:var(--cement);border-bottom:1px solid var(--rule);}
+  .nav-inner{max-width:1100px;margin:0 auto;padding:16px 30px;display:flex;
+    align-items:center;justify-content:space-between;}
+  .brand{font-family:var(--disp);font-weight:900;font-size:23px;letter-spacing:-.04em;
+    color:var(--ink);display:inline-flex;align-items:center;gap:8px;}
+  .brand .mark{width:9px;height:9px;background:var(--sage);display:inline-block;}
+  .nav-links{display:flex;gap:26px;}
+  .nav-links a{font-family:var(--mono);font-size:12px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--ink-2);transition:color .2s;}
+  .nav-links a:hover{color:var(--ink);}
+  .nav-links a.back::before{content:"← ";color:var(--sage);}
+
+  header.hero{padding:70px 30px 60px;border-bottom:1px solid var(--rule);}
+  .hero-top{display:flex;align-items:center;gap:14px;margin-bottom:30px;}
+  .hero-top .tick{width:34px;height:2px;background:var(--sage);}
+  .mono-label{font-family:var(--mono);font-size:11.5px;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--ink-2);font-weight:500;}
+  .hero h1{font-family:var(--disp);font-weight:900;font-size:clamp(44px,8vw,96px);
+    line-height:.94;letter-spacing:-.04em;text-transform:uppercase;margin-bottom:30px;}
+  .hero h1 .u{position:relative;}
+  .hero h1 .u::after{content:"";position:absolute;left:0;bottom:.08em;width:100%;height:.07em;background:var(--sage);}
+  .intro{max-width:60ch;}
+  .intro p{font-size:16px;color:var(--ink-2);line-height:1.78;margin-bottom:16px;}
+  .intro p b{color:var(--ink);font-weight:600;}
+
+  section{padding:64px 30px;}
+  .feed-status{font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--ink-3);margin-bottom:24px;display:flex;align-items:center;gap:9px;}
+  .feed-status .pulse{width:7px;height:7px;background:var(--sage);animation:pulse 2s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:.35;}50%{opacity:1;}}
+
+  .grid{border-top:1px solid var(--rule);border-left:1px solid var(--rule);
+    display:grid;grid-template-columns:repeat(2,1fr);}
+  @media(max-width:680px){.grid{grid-template-columns:1fr;}}
+  .src-group{margin-bottom:54px;}
+  .src-group:last-child{margin-bottom:0;}
+  .src-head{display:flex;align-items:baseline;gap:16px;margin-bottom:22px;}
+  .src-idx{font-family:var(--mono);font-size:12px;color:var(--sage);font-weight:600;letter-spacing:.12em;}
+  .src-title{font-family:var(--disp);font-weight:800;text-transform:uppercase;
+    font-size:clamp(26px,4vw,40px);line-height:1;letter-spacing:-.03em;}
+  .src-note{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);}
+  .post{background:var(--cement);border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);
+    padding:30px 28px;display:flex;flex-direction:column;gap:13px;min-height:212px;transition:background .25s;}
+  .post:hover{background:var(--cement-2);}
+  .post .coord{font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--sage);font-weight:600;}
+  .post .src{font-family:var(--mono);font-size:11px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--ink-2);font-weight:500;}
+  .post h4{font-family:var(--disp);font-weight:700;font-size:23px;line-height:1.1;
+    letter-spacing:-.02em;text-transform:uppercase;}
+  .post .excerpt{font-family:var(--mono);font-size:13.5px;color:var(--ink-2);line-height:1.6;flex:1;}
+  .post .meta{display:flex;justify-content:space-between;font-family:var(--mono);
+    font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);}
+  .post .meta .arr{color:var(--sage);transition:transform .2s;}
+  .post:hover .meta .arr{transform:translateX(4px);}
+
+  footer{padding:60px 30px;border-top:1px solid var(--rule);}
+  .foot-base{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
+    font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);}
+  .foot-base a{border-bottom:1px solid var(--sage);}
+</style>
+</head>
+<body id="top">
+
+<div class="docbar">
+  <div class="docbar-inner">
+    <span class="lead">BISOLA ABIMBOLA</span>
+    <span>FILE 03 <b>//</b> WRITING</span>
+  </div>
+</div>
+
+<nav>
+  <div class="nav-inner">
+    <a class="brand" href="index.html">Bisola<span class="mark"></span></a>
+    <div class="nav-links"><a class="back" href="index.html">Back to the multiverse</a></div>
+  </div>
+</nav>
+
+<header class="hero wrap">
+  <div class="hero-top"><span class="tick"></span><span class="mono-label">Writing</span></div>
+  <h1>The best thing<br>I know how to <span class="u">do</span></h1>
+  <div class="intro" id="intro"></div>
+</header>
+
+<section class="wrap">
+  <div class="feed-status" id="feed-status"><span class="pulse"></span><span>Loading the latest…</span></div>
+
+  <div class="src-group">
+    <div class="src-head"><span class="src-idx">SS</span><h2 class="src-title">Substack</h2><span class="src-note">Essays &amp; journaling</span></div>
+    <div class="grid" id="feed-substack"></div>
+  </div>
+
+  <div class="src-group">
+    <div class="src-head"><span class="src-idx">MD</span><h2 class="src-title">Medium</h2></div>
+    <div class="grid" id="feed-medium"></div>
+  </div>
+</section>
+
+<footer class="wrap">
+  <div class="foot-base">
+    <span>&copy; <span id="year"></span> BISOLA ABIMBOLA</span>
+    <span><a href="index.html">← Back to the multiverse</a></span>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   EDITABLE CONTENT
+   ============================================================ */
+const INTRO = `
+  <p>I like to think I've always known how to write. It runs through my bones more than
+     anything I've ever learned, and I believe that everybody should write. Writing is the
+     closest thing I have to therapy, and the idea of my words being on the internet after
+     I'm gone is a great comfort.</p>
+`;
+
+/* Shown only before deploy or if a feed is briefly unreachable. */
+const SEED_SUBSTACK = [
+  { title:"My Jealousy is not Your Jealousy", excerpt:"I admitted what most people don't like to.",
+    url:"https://bisolaabimbola.substack.com/p/my-jealousy-is-not-your-jealousy" },
+];
+const SEED_MEDIUM = [
+  { title:"Amala", excerpt:"A short story.",
+    url:"https://medium.com/@bysorlah48/amala-95959b5c911c" },
+  { title:"Device Attestation", excerpt:"How your phone proves it's really your phone.",
+    url:"https://medium.com/@bysorlah48/device-attestation-or-how-your-phone-proves-its-really-your-phone-0cb6fe7d9399" },
+];
+
+/* ============================================================
+   RENDERING + LIVE FEED
+   ============================================================ */
+document.getElementById("intro").innerHTML = INTRO;
+document.getElementById("year").textContent = new Date().getFullYear();
+
+function renderGroup(elId, posts, prefix){
+  document.getElementById(elId).innerHTML = posts.map((p,i)=>`
+    <a class="post" href="${p.url}" target="_blank" rel="noopener">
+      <span class="coord">${prefix}-${String(i+1).padStart(2,"0")}</span>
+      <h4>${p.title}</h4>
+      <p class="excerpt">${p.excerpt||""}</p>
+      <span class="meta"><span>${p.date||""}</span><span class="arr">Read ↗</span></span>
+    </a>`).join("");
+}
+
+function setStatus(live){
+  document.getElementById("feed-status").innerHTML = live
+    ? '<span class="pulse"></span><span>Live // most recent from each</span>'
+    : '<span>Recent work // goes live once deployed</span>';
+}
+
+(async function loadFeed(){
+  try{
+    const r = await fetch("/api/feed");
+    if(!r.ok) throw 0;
+    const d = await r.json();
+    if(!d.posts || !d.posts.length) throw 0;
+    const sub = d.posts.filter(p=>p.source==="Substack").slice(0,5);
+    const med = d.posts.filter(p=>p.source==="Medium").slice(0,5);
+    renderGroup("feed-substack", sub.length?sub:SEED_SUBSTACK, "SS");
+    renderGroup("feed-medium",   med.length?med:SEED_MEDIUM, "MD");
+    setStatus(true);
+  }catch(e){
+    renderGroup("feed-substack", SEED_SUBSTACK, "SS");
+    renderGroup("feed-medium",   SEED_MEDIUM, "MD");
+    setStatus(false);
+  }
+})();
+</script>
+</body>
+</html>
